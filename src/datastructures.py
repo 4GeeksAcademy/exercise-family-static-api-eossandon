@@ -25,17 +25,30 @@ class FamilyStructure:
         self._next_id += 1
         return generated_id
 
-    def add_member(self, member):
+    def add_member(self, first_name,age,lucky_numbers):
+        self._members.append(
+            {
+                "id": self._generate_id(),
+                "first_name": first_name,
+                "last_name":self.last_name,
+                "age": age,
+                "lucky_numbers": lucky_numbers
+            }
+        )
         ## You have to implement this method
         ## Append the member to the list of _members
         pass
 
     def delete_member(self, id):
+        self._members.pop(id)
         ## You have to implement this method
         ## Loop the list and delete the member with the given id
         pass
 
     def get_member(self, id):
+        for i in self._members:
+            if i["id"] == id:
+                return i
         ## You have to implement this method
         ## Loop all the members and return the one with the given id
         pass
