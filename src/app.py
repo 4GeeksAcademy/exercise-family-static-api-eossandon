@@ -16,11 +16,6 @@ CORS(app)
 # Create the jackson family object
 jackson_family = FamilyStructure("Jackson")
 
-jackson_family.add_member("Jane","35",[10,14,3])
-jackson_family.add_member("Jimmy","5",[1])
-
-
-
 # Handle/serialize errors like a JSON object
 @app.errorhandler(APIException)
 def handle_invalid_usage(error):
@@ -32,6 +27,9 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
+@app.route('/health-check',methods=['GET'])
+def health_check():
+    return jsonify('ok')
 
 @app.route('/members', methods=['GET'])
 def handle_hello():
@@ -42,20 +40,42 @@ def handle_hello():
                      "len": len(members)
                      
                      }
-    return jsonify(response_body), 200
-
-@app.route('/members/<int:member_id>', methods=['GET'])
-def get_member(member_id):
-    member = jackson_family.get_member(member_id)
-    response_body = {"Member":member}
-    return jsonify(response_body),200
-
-@app.route('members',methods=['POST'])
-def post_memeber(first_name,age,lucky_numbers):
-    required_fields =
+    return jsonify(members), 200
 
 
 
+@app.route('/members/<int:theid>', methods=['GET'])
+def get_member(theid):
+    member = jackson_family.get_member(theid)
+    try:
+        if member:
+            response_body = member
+            return jsonify(response_body),200
+        else:
+            return jsonify({
+                "message": "Member not found"
+            }),400
+
+    except Exception as error: return jsonify("Error de la plataforma 500 internal server error"),500
+
+@app.route('/members', methods=['POST'])
+def post_member():
+    
+    data = request.get_json()
+    response = jackson_family.add_member(data)
+    if response:
+        return jsonify(response),200
+    else:
+        return jsonify("error"),400
+    
+
+@app.route('/members/<int:theid>', methods=['DELETE'])
+def del_member(theid):
+    response = jackson_family.delete_member(theid)
+    if response:
+        return jsonify({"done" : True}),200
+    else:
+        return jsonify({"done" : False}),400
 
 # This only runs if `$ python src/app.py` is executed
 if __name__ == "__main__":
